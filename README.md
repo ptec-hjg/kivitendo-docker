@@ -19,7 +19,7 @@ Docker build files for kivitendo, an ERP system for the German market
 
 # Introduction
 
-This Dockerfile and his accompanying files are used to build a docker image providing the popular ERP 
+This Dockerfile and its accompanying files are used to build a docker image providing the popular ERP 
 [kivitendo](http://www.kivitendo.de).
 
 The image is based on debian (currently buster:slim) and will include Apache2 and all the necessary packages 
@@ -55,13 +55,13 @@ docker run --name postgres1 -d \
 To test if the postgresql server is working properly, try connecting to it with:
 
 ```bash
-docker exec -it postgres1 psql -U  postgres db_ptec -c "SELECT 'successfully queried postgres container';"
+docker exec -it postgres1 psql -U  postgres postgres -c "SELECT 'successfully queried postgres container';"
 ```
 
 If you need access to the database files later on you can link the postgres volume to your working directory like this:
 
 ```bash
-ln -s /var/lib/docker/volumes/postgres1/_data /root/kivitendo/postgres1
+ln -s /var/lib/docker/volumes/postgres1/_data ~/kivitendo/postgres1
 ```
 
 I suppose that you are using a debian box, where docker stores it's volumes per default at /var/lib/docker/volumes.
@@ -93,7 +93,7 @@ There are a lot of parameters and options you can set to suite your needs.
 I will explain the most often used:
 
 The '-e "postgres_ ..."' parameters tell our kivitendo how to connect to the already running postgres container and
-what credential to use.
+what credentials to use.
 
 The '-e "kivitendo_user/password"' defines the kivitendo superuser needed to create and maintain your kivitendo databases.
 
@@ -169,10 +169,10 @@ stopped and started again, we defined all those '-v ...' options above.
 To link those volumes to your working directory, issue these commands:
 
 ```bash
-ln -s /var/lib/docker/volumes/kivid_templ/_data /root/kivitendo/kivid_templ
-ln -s /var/lib/docker/volumes/kivid_config/_data /root/kivitendo/kivid_config
-ln -s /var/lib/docker/volumes/kivid_users/_data /root/kivitendo/kivid_users
-ln -s /var/lib/docker/volumes/kivid_webdav/_data /root/kivitendo/kivid_webdav
+ln -s /var/lib/docker/volumes/kivid_templ/_data ~/kivitendo/kivid_templ
+ln -s /var/lib/docker/volumes/kivid_config/_data ~/kivitendo/kivid_config
+ln -s /var/lib/docker/volumes/kivid_users/_data ~/kivitendo/kivid_users
+ln -s /var/lib/docker/volumes/kivid_webdav/_data ~/kivitendo/kivid_webdav
 ```
 
 
