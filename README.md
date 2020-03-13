@@ -19,10 +19,10 @@ To learn more about kivitendo please visit the maintainer's page at [kivitendo.d
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
     - [Data Store](#data-store)
-- [Maintenance](#maintenance)
     - [Printing](#printing)
+- [Maintenance](#maintenance)
     - [Backup](#backup)
-- [Upgrading](#upgrading)
+    - [Upgrading](#upgrading)
 
 # Introduction
 
@@ -194,8 +194,6 @@ ln -s /var/lib/docker/volumes/kivid_webdav/_data ~/kivitendo/kivid_webdav
 ```
 
 
-# Maintenance
-
 ## Printing
 
 To configure a printer for your kivitendo system, you may use the CUPS GUI:
@@ -209,6 +207,9 @@ Configuring the CUPS system is beyond this guide, please take a look at
 
 When adding a printer you may have to enter administrative credentials which you had defined 
 using the '-e "cups_user/password"' parameters.
+
+
+# Maintenance
 
 
 ## Backup
@@ -234,7 +235,7 @@ docker exec -i postgres1 psql -U postgres postgres  < ./db_mand1-20201122_16:30.
 
 
 
-# Upgrading
+## Upgrading
 
 To upgrade to a newer releases, simply follow these 3 steps.
 
