@@ -1,7 +1,14 @@
-kivitendo-docker
-================
+Welcome to kivitendo
+====================
 
-Docker build files for kivitendo, an ERP system for the German market
+kivitendo is a web-based application for customer addresses, products, warehouse management, quotations 
+and commercial financial accounting for the German market.  
+
+You can use it to do your office work both on the intranet and on the Internet. As an open source solution, 
+it is the first choice if you want to add special forms, documents, tasks or functions that you want to use 
+to meet your individual requirements.
+
+To learn more about kivitendo please visit the maintainer's page at [kivitendo.de](http://www.kivitendo.de/index.html)
 
 
 # Table of Contents
@@ -20,7 +27,7 @@ Docker build files for kivitendo, an ERP system for the German market
 # Introduction
 
 This Dockerfile and its accompanying files are used to build a docker image providing the popular ERP 
-[kivitendo](http://www.kivitendo.de).
+[kivitendo.de](http://www.kivitendo.de/index.html).
 
 The image is based on debian (currently buster:slim) and will include Apache2 and all the necessary packages 
 for kivitendo-erp and kivitendo-crm. For ease of
@@ -32,7 +39,12 @@ A Postgresql database is NOT part of this docker image but must be supplied from
 
 # Installation
 
-I assume that you are working on your favourite linux box. So create a working directory to easily manage all 
+A complete kivitendo application consists out of a kivitendo docker image and a PostgreSQL SQL server image. 
+
+I assume that you are working on your favourite linux box as your docker host (e.g. your NAS) where to 
+store all your database, configuration and email files used by kivitendo.  
+
+To deploy a new application, first create a working directory to easily manage all 
 your kivitendo containers & data.
 
 ```bash
@@ -64,7 +76,7 @@ If you need access to the database files later on you can link the postgres volu
 ln -s /var/lib/docker/volumes/postgres1/_data ~/kivitendo/postgres1
 ```
 
-I suppose that you are using a debian box, where docker stores it's volumes per default at /var/lib/docker/volumes.
+Again I suppose that you are using a debian box, where docker stores it's volumes per default at /var/lib/docker/volumes.
 
 
 
@@ -86,7 +98,7 @@ docker run --name kivid -d \
  -v /var/run/dbus:/var/run/dbus \
  -p 631:631 \
  -p 80:80 \
- ptec-hjg/kivitendo-docker:3.5.5
+ ptechjg/kivitendo-docker:3.5.5
 ```
 
 There are a lot of parameters and options you can set to suite your needs.
@@ -110,8 +122,8 @@ The kivitendo web GUI and the cups GUI are exposed to their standard ports 80 an
 
 
 
-Alternately you can build the image by yourself. Just clone the git repository and perform a docker 'build'.
-You may change the Dockerfile to better suite your preferences by editing the ENV values within.
+For further customizations you can build the image by yourself. Just clone the git repository and perform a docker 'build'.
+In a first step you may change the Dockerfile to better suite your preferences by editing the ENV values within.
 
 ```bash
 git clone https://github.com/ptec-hjg/kivitendo-docker.git
@@ -123,7 +135,7 @@ docker build -t="<name_of_your_container>" .
 
 As your kivitendo container is up now, you can go with this run-through to quickly get a working configuration.
 
-Point your browser to the ip of your linux box
+Point your browser to the ip of your docker host:
 ```bash
 http://<ip_of_your_linux_box>
 ```
@@ -132,28 +144,34 @@ You will likely get an error message (Fehler 'Datenbank nicht erreichbar'), so y
 kivitendo's administrative interface. Use the above defined password 'admin123' (kivitendo_adminpassword) to login
  and perform the basic configuration:
 
+- Create kivitendo database  
 'Datenbankadministration' | 'Neue Datenbank anlegen' (IP, port, Datenbankbenutzer & Passwort do have defaults): 'Anmelden'  
 'Tabellen anlegen', 'Weiter'
 
+- Create user  
 'Benutzer, Mandanten und Benutzergruppen' | 'Neuer Benutzer'
   Benutzer: 'user1', Passwort: 'user1', Name: 'User 1', 'Speichern'
 
+- Create usergroup  
 'Benutzer, Mandanten und Benutzergruppen' | 'Neuer Benutzergruppe'
   Name: 'Alle', check all heading checkboxes, move 'user1' into group, 'speichern'
 
+- Create client database  
 'Datenbankadministration' | 'Neue Datenbank anlegen'
   Datenbankanmeldung: 'anmelden' 
     'Neue Datenbank anlegen' 'db_mand1', SKR03, Soll-Versteuerung, Bestandsmethode, Bilanzierung, 'anlegen'
 
+- Create client  
 'Benutzer, Mandanten und Benutzergruppen' | 'Neuer Mandant'
   'Mandantname' 'Mand1', Standardmandant: j, Datenbankname: 'db_mand1', Zugriff: 'user1', 
     Gruppen: 'Alle'+'Vollzugriff', 'speichern'
 
+- Go to the regular login screen  
 'System' | 'Zum Benutzerlogin'
 
 Now you can login as user 'user1' with the password 'user1' on  'Mand1'.
 
-To let kivitendo create some important CRM database content, just load a mask from the crm:
+To let kivitendo create some important CRM database content, just load a screen from the crm:  
   CRM | Administration | Mandant
 
 Congratulation, you have a running kivitendo docker container to play with.
@@ -166,7 +184,7 @@ Congratulation, you have a running kivitendo docker container to play with.
 To make sure that the data stored in the kivitendo / postgresql database is not lost when the image is 
 stopped and started again, we defined all those '-v ...' options above.
 
-To link those volumes to your working directory, issue these commands:
+To link those volumes to your working directory for easy access, issue these commands:
 
 ```bash
 ln -s /var/lib/docker/volumes/kivid_templ/_data ~/kivitendo/kivid_templ
@@ -229,7 +247,7 @@ docker stop kivid
 - **Step 2**: Update the docker image
 
 ```bash
-docker pull ptec-hjg/kivitendo-docker:latest
+docker pull ptechjg/kivitendo-docker:latest
 ```
 
 - **Step 3**: Start the image and run the container
@@ -250,7 +268,7 @@ docker run --name kivid -d \
  -v /var/run/dbus:/var/run/dbus \
  -p 631:631 \
  -p 80:80 \
- ptec-hjg/kivitendo-docker:latest
+ ptechjg/kivitendo-docker:latest
 ```
 
 Please use kivitendo's administrative login first to go through database upgrades.
