@@ -22,6 +22,7 @@ To learn more about kivitendo please visit the maintainer's page at [kivitendo.d
     - [Printing](#printing)
 - [Maintenance](#maintenance)
     - [Backup](#backup)
+    - [Stopping and starting the container](#Stopping and starting the container)
     - [Upgrading](#upgrading)
 
 # Introduction
@@ -76,7 +77,7 @@ If you need access to the database files later on you can link the postgres volu
 ln -s /var/lib/docker/volumes/postgres1/_data ~/kivitendo/postgres1
 ```
 
-Again I suppose that you are using a debian box, where docker stores it's volumes per default at /var/lib/docker/volumes.
+Again I suppose that you are using a debian box, where docker stores its volumes per default at /var/lib/docker/volumes.
 
 
 
@@ -135,7 +136,7 @@ docker build -t="<name_of_your_container>" .
 
 As your kivitendo container is up now, you can go with this run-through to quickly get a working configuration.
 
-Point your browser to the ip of your docker host:
+The kivitendo container will be available by browsing to the ip of your docker host:
 ```bash
 http://<ip_of_your_linux_box>
 ```
@@ -232,12 +233,31 @@ docker exec -i postgres1 dropdb -U postgres db_mand1
 docker exec -i postgres1 psql -U postgres postgres  < ./db_mand1-20201122_16:30.sql
 ```
 
+## Stopping and starting the container
 
+To stop the container use:
+
+```bash
+$ docker stop kivid
+```
+
+To start the container again:
+
+```bash
+$ docker start kivid
+```
 
 
 ## Upgrading
 
-To upgrade to a newer releases, simply follow these 3 steps.
+Upgrading a kivitendo Docker container is actually a matter of stopping and deleting the container
+, downloading the most recent version of the image and starting a container again. The container will 
+take care of updating the database structure to the newest version if necessary.
+
+**IMPORTANT!** Do not delete any of the volumes, only the container.
+
+
+To upgrade to a newer releases, simply follow these steps.
 
 - **Step 1**: Stop the currently running container
 
@@ -245,13 +265,19 @@ To upgrade to a newer releases, simply follow these 3 steps.
 docker stop kivid
 ```
 
-- **Step 2**: Update the docker image
+- **Step 2**: Remove the container
 
 ```bash
-docker pull ptechjg/kivitendo-docker:latest
+docker rm kivid
 ```
 
-- **Step 3**: Start the image and run the container
+- **Step 3**: Get the new Docker image version
+
+```bash
+docker pull ptechjg/kivitendo-docker:3.5.5
+```
+
+- **Step 4**: Start the image and run the container
 
 ```bash
 docker run --name kivid -d \
@@ -269,7 +295,8 @@ docker run --name kivid -d \
  -v /var/run/dbus:/var/run/dbus \
  -p 631:631 \
  -p 80:80 \
- ptechjg/kivitendo-docker:latest
+ ptechjg/kivitendo-docker:3.5.5
 ```
 
-Please use kivitendo's administrative login first to go through database upgrades.
+Please use kivitendo's administrative login first to let kivitendo upgrade your databases.
+

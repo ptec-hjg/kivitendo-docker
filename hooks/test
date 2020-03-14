@@ -1,0 +1,42 @@
+#!/bin/bash -e
+
+. ./hooks/env
+
+function retry {
+  local retry_max=$1
+  shift
+
+  local count=$retry_max
+  while [ $count -gt 0 ]; do
+    "$@" && break
+    count=$(($count - 1))
+    sleep 3
+  done
+
+  [ $count -eq 0 ] && {
+    echo "Tests [$retry_max] failed: $@" >&2
+    return 1
+  }
+  return 0
+}
+
+function test_link_message {
+    # Message is: apache2 entered RUNNING state
+    docker logs ${CID} | grep -iq 'apache2 entered RUNNING state'
+    return 0
+}
+
+function finish {
+    if [ -n "${CID}" ]; then
+        docker logs ${CID}
+        docker rm -f ${CID}
+    fi
+}
+trap finish EXIT
+
+echo "test run image ..."
+export CID="$(docker run -d -e STATUS=Yes $IMAGE_NAME)"
+
+sleep 5s
+retry 2 test_link_message
+

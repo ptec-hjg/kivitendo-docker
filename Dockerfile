@@ -1,5 +1,7 @@
 FROM debian:buster-slim
 
+LABEL description="kivitendo container"
+
 MAINTAINER Hans-Jürgen Grimminger <info@ptec.de>
 
 # Environment configuration options
@@ -17,6 +19,9 @@ ENV kivitendo_adminpassword admin123
 ENV kivitendo_template company
 ENV cups_user admin
 ENV cups_password admin
+
+ARG VERSION=3.5.5
+ARG BUILD_DATE
 
 
 # set debian locale
