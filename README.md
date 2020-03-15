@@ -8,7 +8,7 @@ You can use it to do your office work both on the intranet and on the Internet. 
 it is the first choice if you want to add special forms, documents, tasks or functions that you want to use 
 to meet your individual requirements.
 
-To learn more about kivitendo please visit the maintainer's page at [kivitendo.de](http://www.kivitendo.de/index.html)
+To learn more about kivitendo please visit the maintainers page at [kivitendo.de](http://www.kivitendo.de/index.html)
 
 
 # Table of Contents
@@ -22,7 +22,7 @@ To learn more about kivitendo please visit the maintainer's page at [kivitendo.d
     - [Printing](#printing)
 - [Maintenance](#maintenance)
     - [Backup](#backup)
-    - [Stopping and starting the container](#Stopping and starting the container)
+    - [Stopping and starting the container](#Stopping-and-starting-the-container)
     - [Upgrading](#upgrading)
 
 # Introduction
@@ -142,7 +142,7 @@ http://<ip_of_your_linux_box>
 ```
 
 You will likely get an error message (Fehler 'Datenbank nicht erreichbar'), so you have to follow the link to
-kivitendo's administrative interface. Use the above defined password 'admin123' (kivitendo_adminpassword) to login
+kivitendos administrative interface. Use the above defined password 'admin123' (kivitendo_adminpassword) to login
  and perform the basic configuration:
 
 - Create kivitendo database  
@@ -190,7 +190,7 @@ To link those volumes to your working directory for easy access, issue these com
 ```bash
 ln -s /var/lib/docker/volumes/kivid_templ/_data ~/kivitendo/kivid_templ
 ln -s /var/lib/docker/volumes/kivid_config/_data ~/kivitendo/kivid_config
-ln -s /var/lib/docker/volumes/kivid_users/_data ~/kivitendo/kivid_users
+ln -s /var/lib/docker/volumes/kivid_documents/_data ~/kivitendo/kivid_documents
 ln -s /var/lib/docker/volumes/kivid_webdav/_data ~/kivitendo/kivid_webdav
 ```
 
@@ -298,5 +298,5 @@ docker run --name kivid -d \
  ptechjg/kivitendo-docker:3.5.5
 ```
 
-Please use kivitendo's administrative login first to let kivitendo upgrade your databases.
+Please use kivitendos administrative login first to let kivitendo upgrade your databases.
 
