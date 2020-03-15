@@ -99,7 +99,7 @@ docker run --name kivid -d \
  -v /var/run/dbus:/var/run/dbus \
  -p 631:631 \
  -p 80:80 \
- ptechjg/kivitendo-docker:3.5.5
+ ptechjg/kivitendo-docker:latest
 ```
 
 There are a lot of parameters and options you can set to suite your needs.
@@ -274,7 +274,7 @@ docker rm kivid
 - **Step 3**: Get the new Docker image version
 
 ```bash
-docker pull ptechjg/kivitendo-docker:3.5.5
+docker pull ptechjg/kivitendo-docker:latest
 ```
 
 - **Step 4**: Start the image and run the container
@@ -295,7 +295,7 @@ docker run --name kivid -d \
  -v /var/run/dbus:/var/run/dbus \
  -p 631:631 \
  -p 80:80 \
- ptechjg/kivitendo-docker:3.5.5
+ ptechjg/kivitendo-docker:latest
 ```
 
 Please use kivitendos administrative login first to let kivitendo upgrade your databases.
