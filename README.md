@@ -24,6 +24,7 @@ To learn more about kivitendo please visit the maintainers page at [kivitendo.de
     - [Backup](#backup)
     - [Stopping and starting the container](#Stopping-and-starting-the-container)
     - [Upgrading](#upgrading)
+- [Manage customizations](#manage-customization)
 
 # Introduction
 
@@ -209,6 +210,15 @@ Configuring the CUPS system is beyond this guide, please take a look at
 When adding a printer you may have to enter administrative credentials which you had defined 
 using the '-e "cups_user/password"' parameters.
 
+It can be useful to 'Set Allowed Users' to 'root www-data print'.
+
+If you want access your CUPS configuration from outside your kivitendo container (e.g. for backup reason) you can add
+this line to your command with which you start the kivitendo container:
+
+```bash
+ -v kivid_cups:/etc/cups \
+```
+
 
 # Maintenance
 
@@ -299,4 +309,64 @@ docker run --name kivid -d \
 ```
 
 Please use kivitendos administrative login first to let kivitendo upgrade your databases.
+
+# Manage Customizations
+
+A lot of people do not use the stock kivitendo but just pull it from the official repository and add their
+own customizations, without pushing back to the main repository.
+
+How do you manage those customizations with this docker image, and how do you apply your changes
+to the next version of the image?
+
+For this we use the git patch commands, creating appropriate patch files for all your changes, and applying those 
+patches when a new version of the docker image is run.
+
+To define the name of your own branch of kivitendo you can use this environment setting when starting the container:
+
+```bash
+ -e "kivitendo_branch=customize" \
+```
+
+To get access to and feed the container with patch files, you have to connect to this docker volume:
+
+```bash
+ -v kivid_patches:/var/www/patches \
+```
+
+As you have done with the other volumes you may create a symbolic link in your working directory for ease of use:
+
+```bash
+ln -s /var/lib/docker/volumes/kivid_patches/_data ~/kivitendo/kivid_patches
+```
+
+
+To do your customizatio you would typically work within your running container. To jump into it use:
+
+```bash
+docker exec -it kivid bash
+```
+
+Kivitendo is located as usual at /var/www/kivitendo-erp (the crm is at /var/www/kivitendo-crm), and you are
+already within your working branch as defined above ('customie' as default).
+
+When all your changes are done, you have to use this command to create patch files:
+
+```bash
+git commit -a -m "<your descriptive comment>"
+git format-patch master -o /var/www/patches/erp
+```
+
+Git will create patch files reflecting your changes into the named directory.
+
+And that's it.  
+The next time you pull and start a new version of this docker image, the
+container will automagically apply your patches to kivitendo, as long as you did provide the above mentioned
+patch volume at the start of your container.
+
+To create patch files for the kivitendo-crm please use '/var/www/patches/crm' as output directory for
+the aboce 'git format-patch' command.
+
+You should check the appropriate log files generated within the patch directories to be sure that your
+patches are proccessed successfully.  
+Any conflicts have to be resolved by you.
 

@@ -34,11 +34,11 @@ if [ -f /tmp/container_first ]; then
   echo "... checking out custom git branch ${kivitendo_branch} & apply patches"
   cd /var/www/kivitendo-erp
   git checkout -b ${kivitendo_branch}
-  if [ -f /var/www/patches/erp/*.patch ]; then git am /var/www/patches/erp/*.patch > /var/www/patches/erp.log; fi 
+  if [ -f /var/www/patches/erp/*.patch ]; then git am /var/www/patches/erp/*.patch > /var/www/patches/erp.log || true; fi 
 
   cd /var/www/kivitendo-crm
   git checkout -b ${kivitendo_branch}
-  if [ -f /var/www/patches/crm/*.patch ]; then git am /var/www/patches/crm/*.patch > /var/www/patches/crm.log; fi 
+  if [ -f /var/www/patches/crm/*.patch ]; then git am /var/www/patches/crm/*.patch > /var/www/patches/crm.log || true; fi 
 
   echo "... setting mailer configuration"
   # exim4 can't bind to ::1, so update configuration
