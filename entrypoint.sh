@@ -19,7 +19,33 @@ run_as() {
     fi
 }
 
+#wait for postgres container to startup
+until psql "host=$postgres_host user=$postgres_user password=$postgres_password" -c '\q'; do
+	>&2 echo "Postgres is not yet available - waiting ..."
+	sleep 30
+done
+
 # first time run ?
+if [ -f /tmp/container_first ]; then
+  echo "Kivitendo container first run"
+
+  rm /tmp/container_first
+
+  echo "... checking out custom git branch ${kivitendo_branch} & apply patches"
+  cd /var/www/kivitendo-erp
+  git checkout -b ${kivitendo_branch}
+  if [ -f /var/www/patches/erp/*.patch ]; then git am /var/www/patches/erp/*.patch > /var/www/patches/erp.log; fi 
+
+  cd /var/www/kivitendo-crm
+  git checkout -b ${kivitendo_branch}
+  if [ -f /var/www/patches/crm/*.patch ]; then git am /var/www/patches/crm/*.patch > /var/www/patches/crm.log; fi 
+
+  echo "... setting mailer configuration"
+  # exim4 can't bind to ::1, so update configuration
+  sed -i "s/dc_local_interfaces.*/dc_local_interfaces='127.0.0.1 ; '/" /etc/exim4/update-exim4.conf.conf
+  update-exim4.conf
+fi
+
 if [ ! -f /var/www/kivitendo-erp/config/kivitendo.conf ]; then
   echo "Kivitendo configuration directory is empty, so start initialization"
 
@@ -42,23 +68,11 @@ if [ ! -f /var/www/kivitendo-erp/config/kivitendo.conf ]; then
   sed -i "s%^# document_path =.*%document_path = /var/www/kivitendo-erp/kivi_documents%" /var/www/kivitendo-erp/config/kivitendo.conf
 
 
-
   echo "... creating database user & extensions"
-  #wait for postgres container to startup
-  until psql "host=$postgres_host user=$postgres_user password=$postgres_password" -c '\q'; do
-	>&2 echo "Postgres is not yet available - waiting ..."
-	sleep 30
-  done
   # create user & extension
   psql "host=$postgres_host user=$postgres_user password=$postgres_password" --command "CREATE EXTENSION IF NOT EXISTS plpgsql;"  >> /var/log/postgres_config.log
   psql "host=$postgres_host user=$postgres_user password=$postgres_password" --command "CREATE USER ${kivitendo_user} WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN NOREPLICATION NOBYPASSRLS  ENCRYPTED PASSWORD '${kivitendo_password}';" >> /var/log/postgres_config.log
   #psql "host=$postgres_host user=$postgres_user password=$postgres_password" --command "CREATE USER ${kivitendo_user} WITH CREATEDB CREATEROLE CREATEUSER  ENCRYPTED PASSWORD '${kivitendo_password}';" >> /var/log/postgres_config.log
-
-
-  echo "... setting mailer configuration"
-  # exim4 can't bind to ::1, so update configuration
-  sed -i "s/dc_local_interfaces.*/dc_local_interfaces='127.0.0.1 ; '/" /etc/exim4/update-exim4.conf.conf
-  update-exim4.conf
 
 else
   echo "Kivitendo configuration directory appears to contain a valid configuration; Skipping initialization"
@@ -84,12 +98,6 @@ if [ -n "$(find "/var/www/kivitendo-erp/templates/$kivitendo_template" -maxdepth
 else
     echo "... print template directory [$kivitendo_template] already populated"
 fi
-
-#wait for postgres container to startup
-until psql "host=$postgres_host user=$postgres_user password=$postgres_password" -c '\q'; do
-	>&2 echo "Postgres is not yet available - waiting ..."
-	sleep 30
-done
 
 #Check Kivitendo installation
 echo "... checking kivitendo configuration"

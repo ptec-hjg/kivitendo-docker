@@ -17,6 +17,7 @@ ENV kivitendo_user kivitendo
 ENV kivitendo_password kivitendo
 ENV kivitendo_adminpassword admin123
 ENV kivitendo_template company
+ENV kivitendo_branch customize
 ENV cups_user admin
 ENV cups_password admin
 
@@ -63,7 +64,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -y  \
   libphp-jpgraph php-enchant aspell-de libset-crontab-perl  \
   \
   lsb-release exim4 supervisor sudo gnupg \
-  mc
+  mc \
+  make liblog-log4perl-perl
 
 
 # Install PostgreSQL client
@@ -128,6 +130,7 @@ RUN cd /var/www/kivitendo-erp/locale/de && mkdir -p more && cd more && ln -s ../
 # Set directory permissions
 #
 RUN mkdir /var/www/kivitendo-erp/webdav /var/www/kivitendo-erp/kivi_documents
+RUN mkdir -p /var/www/patches /var/www/patches/erp /var/www/patches/crm
 #
 RUN chown -R www-data:www-data /var/www
 RUN chmod u+rwx,g+rx,o+rx /var/www
@@ -147,7 +150,8 @@ VOLUME  ["/var/www/kivitendo-erp/templates/$kivitendo_template", \
          "/var/www/kivitendo-erp/config", \
          "/var/www/kivitendo-erp/users", \
          "/var/www/kivitendo-erp/webdav", \
-         "/var/www/kivitendo-erp/kivi_documents"]
+         "/var/www/kivitendo-erp/kivi_documents", \
+         "/var/www/patches"]
 
 
 # Apache configuration
@@ -171,6 +175,7 @@ COPY supervisord*.conf /etc/supervisor/conf.d/
 COPY *.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/*.sh
 
+RUN touch /tmp/container_first
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
