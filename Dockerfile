@@ -20,6 +20,8 @@ ENV kivitendo_template company
 ENV kivitendo_branch customize
 ENV cups_user admin
 ENV cups_password admin
+ENV webdav_user webdav
+ENV webdav_password webdav
 
 ARG VERSION=3.5.5
 ARG BUILD_DATE
@@ -157,7 +159,7 @@ VOLUME  ["/var/www/kivitendo-erp/templates/$kivitendo_template", \
 # Apache configuration
 #
 # set modules
-RUN a2enmod fcgid ssl
+RUN a2enmod fcgid ssl dav*
 # crm:
 RUN a2enmod cgi
 # Set apache site config

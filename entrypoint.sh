@@ -86,6 +86,12 @@ if ! cat /var/www/kivitendo-erp/scripts/task_server.pl | grep -q "foreground"; t
 " /var/www/kivitendo-erp/scripts/task_server.pl
 fi
 
+if [ ! -f /var/www/kivitendo-erp/config/webdav_passwd ]; then
+  echo "creating webdav credentials"
+  htpasswd -b -c /var/www/kivitendo-erp/config/webdav_passwd $webdav_user $webdav_password
+  chown www-data:www-data /var/www/kivitendo-erp/config/webdav_passwd
+  chmod 770 /var/www/kivitendo-erp/config/webdav_passwd
+fi
 
 if [ ! -d /var/www/kivitendo-erp/templates/$kivitendo_template ]; then
     echo "... creating print template directory [$kivitendo_template]"

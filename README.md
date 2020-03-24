@@ -219,6 +219,22 @@ this line to your command with which you start the kivitendo container:
  -v kivid_cups:/etc/cups \
 ```
 
+## WebDAV
+
+You can access the kivitendo webdav directory via webdav (sic!) like this:
+
+```bash
+http://<ip_of_your_linux_box>/webdav
+```
+
+The default username and password are 'webdav' and 'webdav'.  
+You can change the defaults to your own using these environment settings:
+
+```bash
+ -e "webdav_user=webdav" \
+ -e "webdav_password=webdav" \
+```
+
 
 # Maintenance
 
@@ -347,7 +363,7 @@ docker exec -it kivid bash
 ```
 
 Kivitendo is located as usual at /var/www/kivitendo-erp (the crm is at /var/www/kivitendo-crm), and you are
-already within your working branch as defined above ('customie' as default).
+already within your working branch as defined above ('customize' as default).
 
 When all your changes are done, you have to use this command to create patch files:
 
@@ -364,7 +380,7 @@ container will automagically apply your patches to kivitendo, as long as you did
 patch volume at the start of your container.
 
 To create patch files for the kivitendo-crm please use '/var/www/patches/crm' as output directory for
-the aboce 'git format-patch' command.
+the above 'git format-patch' command.
 
 You should check the appropriate log files generated within the patch directories to be sure that your
 patches are proccessed successfully.  
