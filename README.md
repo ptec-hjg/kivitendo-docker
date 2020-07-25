@@ -20,6 +20,7 @@ To learn more about kivitendo please visit the maintainers page at [kivitendo.de
 - [Configuration](#configuration)
     - [Data Store](#data-store)
     - [Printing](#printing)
+    - [WebDAV](#WebDAV)
 - [Maintenance](#maintenance)
     - [Backup](#backup)
     - [Stopping and starting the container](#Stopping-and-starting-the-container)
@@ -356,7 +357,7 @@ ln -s /var/lib/docker/volumes/kivid_patches/_data ~/kivitendo/kivid_patches
 ```
 
 
-To do your customizatio you would typically work within your running container. To jump into it use:
+To do your customization you would typically work within your running container. To jump into it use:
 
 ```bash
 docker exec -it kivid bash

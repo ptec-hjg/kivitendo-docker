@@ -12,7 +12,7 @@ ENV postgres_version 11
 ENV postgres_user postgres
 ENV postgres_password postgres
 ENV postgres_host localhost
-ENV kivitendo_version release-3.5.5
+ENV kivitendo_version release-3.5.6
 ENV kivitendo_user kivitendo
 ENV kivitendo_password kivitendo
 ENV kivitendo_adminpassword admin123
@@ -23,7 +23,7 @@ ENV cups_password admin
 ENV webdav_user webdav
 ENV webdav_password webdav
 
-ARG VERSION=3.5.5
+ARG VERSION=3.5.6
 ARG BUILD_DATE
 
 
@@ -32,6 +32,10 @@ ARG BUILD_DATE
 RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
     && localedef -i ${locale} -c -f UTF-8 -A /usr/share/locale/locale.alias ${locale}.UTF-8
 ENV LANG ${locale}.utf8
+
+# Add backport repository
+RUN printf "deb http://deb.debian.org/debian buster-backports main contrib non-free" > /etc/apt/sources.list.d/backports.list &&\
+    printf "# APT PINNING PREFERENCES\nPackage: *\nPin: release a=buster-backports\nPin-Priority: 200\n" > /etc/apt/preferences.d/99backports 
 
 # Install Packages
 #
@@ -50,15 +54,17 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -y  \
   libimage-info-perl libgd-gd2-perl libapache2-mod-fcgid \
   libfile-copy-recursive-perl libalgorithm-checkdigits-perl \
   libcrypt-pbkdf2-perl git libcgi-pm-perl libtext-unidecode-perl libwww-perl \
-  aqbanking-tools poppler-utils libhtml-restrict-perl \
+                  poppler-utils libhtml-restrict-perl \
   libdatetime-set-perl libset-infinite-perl liblist-utilsby-perl \
   libdaemon-generic-perl libfile-flock-perl libfile-slurp-perl \
   libfile-mimeinfo-perl libpbkdf2-tiny-perl libregexp-ipv6-perl \
-  libdatetime-event-cron-perl libexception-class-perl \
+  libdatetime-event-cron-perl libexception-class-perl libcam-pdf-perl \
+  libxml-libxml-perl \
   libpath-tiny-perl \
   \
   texlive-base-bin texlive-latex-recommended texlive-fonts-recommended \
-  texlive-latex-extra texlive-lang-german texlive-generic-extra texlive-xetex ghostscript lynx \
+  texlive-latex-extra texlive-lang-german texlive-generic-extra texlive-xetex \
+  ghostscript lynx \
   \
   libapache2-mod-php php-gd php-imap php-mail php-mail-mime \
   php-pear php-mdb2 php-mdb2-driver-pgsql php-pgsql  \
@@ -68,6 +74,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -y  \
   lsb-release exim4 supervisor sudo gnupg \
   mc \
   make liblog-log4perl-perl
+
+# Install package(s) from backports
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get -t buster-backports install -y  \
+    aqbanking-tools
 
 
 # Install PostgreSQL client
@@ -125,6 +135,9 @@ RUN cd /var/www/ && git clone https://github.com/kivitendo/kivitendo-crm.git
 RUN cd /var/www/kivitendo-erp && git checkout ${kivitendo_version} && ln -s ../kivitendo-crm/ crm
 # crm modifications
 RUN cd /var/www/ && sed -i '$adocument.write("<script type='text/javascript' src='crm/js/ERPplugins.js'></script>")' kivitendo-erp/js/kivi.js
+RUN cd /var/www/ && sed -i '/var baseUrl/a \
+baseUrl = getUrl \.protocol + "\/\/" + getUrl\.host + "\/";' kivitendo-crm/js/tools.js
+#
 RUN cd /var/www/kivitendo-erp/menus/user && ln -s ../../../kivitendo-crm/menu/10-crm-menu.yaml 10-crm-menu.yaml
 RUN cd /var/www/kivitendo-erp/sql/Pg-upgrade2-auth && ln -s  ../../../kivitendo-crm/update/add_crm_master_rights.sql add_crm_master_rights.sql
 RUN cd /var/www/kivitendo-erp/locale/de && mkdir -p more && cd more && ln -s ../../../../kivitendo-crm/menu/t8e/menu.de crm-menu.de && ln -s ../../../../kivitendo-crm/menu/t8e/menu-admin.de crm-menu-admin.de
