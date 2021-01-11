@@ -1,3 +1,7 @@
+
+THIS REPOSITORY IS NO LONGER MAINTAINED !!
+IT'S SUPERSEDED BY [ptec-hjg/kivitendo-compose](https://github.com/ptec-hjg/kivitendo-compose/).
+
 Welcome to kivitendo
 ====================
 
